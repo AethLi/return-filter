@@ -15,6 +15,6 @@ public class ReturnTestController {
   @GetMapping
   @ReturnExclude(names = {"msg"})
   public Object lockTest() {
-    return new ResponseModel(ResponseStatus.OK);
+    return new ResponseModel(ResponseStatus.OK,"sadfasdf");
   }
 }

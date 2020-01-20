@@ -1,19 +1,19 @@
 package cn.aethli.filter.aspect;
 
 import cn.aethli.filter.annotation.ReturnExclude;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** @author Termite */
@@ -22,32 +22,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ReturnFilterAspect {
 
-  final ObjectMapper jacksonObjectMapper;
-
-  @Autowired
-  public ReturnFilterAspect(ObjectMapper jacksonObjectMapper) {
-    this.jacksonObjectMapper = jacksonObjectMapper;
-  }
-
   @Around(value = "@annotation(cn.aethli.filter.annotation.ReturnExclude)")
   public Object ReturnExcludeAfter(ProceedingJoinPoint joinPoint) throws Throwable {
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     Method method = signature.getMethod();
     ReturnExclude returnExclude = method.getAnnotation(ReturnExclude.class);
-
+    ObjectMapper mapper = new ObjectMapper();
     // 获取名单列表
     String[] names = returnExclude.names();
-    ObjectMapper mapper = jacksonObjectMapper;
-    SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider();
-    String filterId = UUID.randomUUID().toString();
-    simpleFilterProvider.addFilter(filterId,
-        SimpleBeanPropertyFilter.filterOutAllExcept(names));
-
-    mapper.setFilterProvider(simpleFilterProvider);
-    //    mapper.setMixIns()
-    //    return joinPoint.proceed();
+    FilterProvider filterProvider =
+        new SimpleFilterProvider()
+            .setDefaultFilter(SimpleBeanPropertyFilter.filterOutAllExcept(names));
+    mapper.setFilterProvider(filterProvider);
     Object proceed = joinPoint.proceed();
-    return mapper.writeValueAsString(proceed);
+    JsonNode node = mapper.valueToTree(proceed);
+    return node;
   }
 
   public Map<String, Object> convert(String[] names) {
@@ -60,6 +49,6 @@ public class ReturnFilterAspect {
         m.put(splits[0], convert(splits));
       }
     }
-    return null;
+    return m;
   }
 }

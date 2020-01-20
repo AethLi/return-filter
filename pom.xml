@@ -1,62 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.2.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
-  </parent>
-  <groupId>cn.aethli</groupId>
   <artifactId>return-filter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>return-filter</name>
-  <description>return filter</description>
-
-  <properties>
-    <java.version>1.8</java.version>
-  </properties>
-
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <groupId>org.springframework.boot</groupId>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+        <dependency>
+          <groupId>com.alibaba</groupId>
+          <artifactId>fastjson</artifactId>
+          <version>1.2.62</version>
+        </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>com.google.code.gson</groupId>-->
+    <!--      <artifactId>gson</artifactId>-->
+    <!--      <version>2.8.6</version>-->
+    <!--    </dependency>-->
+    <dependency>
+      <artifactId>commons-beanutils</artifactId>
+      <groupId>commons-beanutils</groupId>
+      <version>1.9.4</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
+      <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
       <artifactId>spring-boot-starter-aop</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
-      <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
       <exclusions>
         <exclusion>
-          <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
+          <groupId>org.junit.vintage</groupId>
         </exclusion>
       </exclusions>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
+  <description>return filter</description>
+  <groupId>cn.aethli</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>return-filter</name>
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>2.2.2.RELEASE</version> <!-- lookup parent from repository -->
+  </parent>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+  <properties>
+    <java.version>1.8</java.version>
+  </properties>
+
+  <version>0.0.1-SNAPSHOT</version>
 
 </project>
