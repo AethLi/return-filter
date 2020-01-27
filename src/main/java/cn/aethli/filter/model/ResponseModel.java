@@ -1,15 +1,18 @@
 package cn.aethli.filter.model;
 
 import cn.aethli.filter.commen.enums.ResponseStatus;
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
+@JsonFilter("ResponseModel")
 public class ResponseModel {
 
-  private LocalDate date = LocalDate.now();
+  private LocalDateTime date = LocalDateTime.now();
   private ResponseStatus status;
   private String msg;
   private Object data;
