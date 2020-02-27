@@ -8,13 +8,15 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import java.util.List;
 
 /** @author Termite */
-public class MultipleExcludeFilter extends SimpleBeanPropertyFilter {
+public class MultipleBeanFilter extends SimpleBeanPropertyFilter {
 
   final List<String> names;
+  final boolean eInclude;
 
-  protected MultipleExcludeFilter(List<String> names) {
+  public MultipleBeanFilter(List<String> names, boolean eInclude) {
     super();
     this.names = names;
+    this.eInclude = eInclude;
   }
 
   @Override
@@ -37,9 +39,19 @@ public class MultipleExcludeFilter extends SimpleBeanPropertyFilter {
       name = name.replaceAll("[{]?[}]?[\"]?", "");
       fullNameBuilder.insert(0, name + ".");
     } while (true);
-    if (names.contains(fullNameBuilder.toString())) {
-      return;
+    if (include(fullNameBuilder.toString())) {
+      writer.serializeAsField(pojo, gen, prov);
+    } else if (!gen.canOmitFields()) { // 占位符判断，即使无需输出，详见super的函数
+      writer.serializeAsOmittedField(pojo, gen, prov);
     }
-    super.serializeAsField(pojo, gen, prov, writer);
+  }
+
+  private boolean include(String s) {
+    System.out.println(s);
+    if (eInclude) {
+      return names.stream().anyMatch(name -> name.indexOf(s) == 0);
+    } else {
+      return !names.contains(s);
+    }
   }
 }

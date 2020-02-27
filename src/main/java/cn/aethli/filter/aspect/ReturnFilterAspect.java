@@ -2,14 +2,10 @@ package cn.aethli.filter.aspect;
 
 import cn.aethli.filter.annotation.ReturnExclude;
 import cn.aethli.filter.annotation.ReturnInclude;
+import cn.aethli.filter.filter.MultipleBeanFilter;
 import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -37,101 +33,36 @@ public class ReturnFilterAspect {
 
   @Around(value = "@annotation(cn.aethli.filter.annotation.ReturnExclude)")
   public Object ReturnExcludeAfter(ProceedingJoinPoint joinPoint) throws Throwable {
-    ObjectMapper mapper = defaultMapper.copy();
+    // 获取目标方法的注解参数
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     Method method = signature.getMethod();
     ReturnExclude returnExclude = method.getAnnotation(ReturnExclude.class);
     // 获取名单列表
     List<String> names = Arrays.asList(returnExclude.names());
-    //    FilterProvider filterProvider =
-    //        new SimpleFilterProvider()
-    //            .addFilter("ResponseModel", SimpleBeanPropertyFilter.serializeAllExcept(names));
-    //    mapper.setFilterProvider(filterProvider);
-    //    mapper.addMixIn(Object.class, DataMixIn.class);
-    FilterProvider filterProvider =
-        new SimpleFilterProvider()
-            .addFilter(
-                "filter",
-                new SimpleBeanPropertyFilter() {
-                  @Override
-                  public void serializeAsField(
-                      Object pojo,
-                      JsonGenerator gen,
-                      SerializerProvider prov,
-                      PropertyWriter writer)
-                      throws Exception {
-                    // 获取"."语法的全限定名
-                    StringBuilder fullNameBuilder = new StringBuilder();
-                    fullNameBuilder.append(writer.getName());
-                    JsonStreamContext context = gen.getOutputContext();
-                    do {
-                      context = context.getParent();
-                      if (context == null) {
-                        break;
-                      }
-                      String name = context.toString();
-                      if (name.matches("(\\[).*?(\\])") || name.matches("[/]?")) {
-                        continue;
-                      }
-                      name = name.replaceAll("[{]?[}]?[\"]?", "");
-                      fullNameBuilder.insert(0, name + ".");
-                    } while (true);
-                    if (names.contains(fullNameBuilder.toString())) {
-                      return;
-                    }
-                    super.serializeAsField(pojo, gen, prov, writer);
-                  }
-                });
-    mapper.setFilterProvider(filterProvider);
-    mapper.addMixIn(Object.class, DataMixIn.class);
-
-    //    SimpleModule module =
-    //        new SimpleModule() {
-    //          @Override
-    //          public String getModuleName() {
-    //            return "multi_layer_filter";
-    //          }
-    //
-    //          @Override
-    //          public Version version() {
-    //            return VersionUtil.parseVersion(
-    //                "2.10.1", "com.fasterxml.jackson.datatype", "jackson-datatype-jdk8");
-    //          }
-    //
-    //          @Override
-    //          public void setupModule(SetupContext context) {
-    //            super.setupModule(context);
-    //            BeanSerializerModifier modifier =
-    //                new BeanSerializerModifier() {
-    //                  @Override
-    //                  public List<BeanPropertyWriter> changeProperties(
-    //                      SerializationConfig config,
-    //                      BeanDescription beanDesc,
-    //                      List<BeanPropertyWriter> beanProperties) {
-    //                    return super.changeProperties(config, beanDesc, beanProperties);
-    //                  }
-    //                };
-    //            context.addBeanSerializerModifier(modifier);
-    //          }
-    //        };
-    //    mapper.registerModule(module);
-
-    Object proceed = joinPoint.proceed();
-    return mapper.valueToTree(proceed);
+    return invoke(joinPoint, false, names);
   }
 
   @Around(value = "@annotation(cn.aethli.filter.annotation.ReturnInclude)")
   public Object ReturnIncludeAfter(ProceedingJoinPoint joinPoint) throws Throwable {
-    ObjectMapper mapper = defaultMapper.copy();
+    // 获取目标方法的注解参数
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     Method method = signature.getMethod();
     ReturnInclude returnInclude = method.getAnnotation(ReturnInclude.class);
-    String[] names = returnInclude.names();
+    // 获取名单列表
+    List<String> names = Arrays.asList(returnInclude.names());
+    return invoke(joinPoint, true, names);
+  }
+
+  private Object invoke(ProceedingJoinPoint joinPoint, boolean include, List<String> names)
+      throws Throwable {
+    // 复制一份容器中的objectMapper
+    ObjectMapper mapper = defaultMapper.copy();
+    // 添加过滤器
     FilterProvider filterProvider =
-        new SimpleFilterProvider()
-            .addFilter("ResponseModel", SimpleBeanPropertyFilter.filterOutAllExcept(names));
+        new SimpleFilterProvider().addFilter("filter", new MultipleBeanFilter(names, include));
     mapper.setFilterProvider(filterProvider);
     mapper.addMixIn(Object.class, DataMixIn.class);
+
     Object proceed = joinPoint.proceed();
     return mapper.valueToTree(proceed);
   }

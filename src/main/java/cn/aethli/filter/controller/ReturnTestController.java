@@ -1,6 +1,7 @@
 package cn.aethli.filter.controller;
 
 import cn.aethli.filter.annotation.ReturnExclude;
+import cn.aethli.filter.annotation.ReturnInclude;
 import cn.aethli.filter.commen.enums.ResponseStatus;
 import cn.aethli.filter.model.ResponseModel;
 import cn.aethli.filter.vo.Department;
@@ -16,9 +17,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequestMapping("return/test")
 public class ReturnTestController {
 
-  @GetMapping
-  @ReturnExclude(names = {"msg","data.id","data.user.id"})
-  public Object lockTest() {
+  @GetMapping("include")
+  @ReturnInclude(names = {"msg", "data.id", "data.user.id"})
+  public Object includeTest() {
+    return getResult();
+  }
+
+  @GetMapping("exclude")
+  @ReturnExclude(names = {"msg", "data.id", "data.user.id"})
+  public Object excludeTest() {
+    return getResult();
+  }
+
+  private Object getResult() {
     List<Department> departments = new ArrayList<>();
     for (int x = 0; x <= 5; x++) {
       Department department = new Department();
@@ -31,6 +42,5 @@ public class ReturnTestController {
       departments.add(department);
     }
     return new ResponseModel(ResponseStatus.OK, departments);
-    //    return new ResponseModel(ResponseStatus.OK, "sadfasdf");
   }
 }
