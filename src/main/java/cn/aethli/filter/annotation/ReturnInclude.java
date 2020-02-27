@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 public @interface ReturnInclude {
-  String[] name();
+  String[] names();
 }

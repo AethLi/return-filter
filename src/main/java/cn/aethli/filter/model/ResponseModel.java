@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-@JsonFilter("ResponseModel")
 public class ResponseModel {
 
   private LocalDateTime date = LocalDateTime.now();
