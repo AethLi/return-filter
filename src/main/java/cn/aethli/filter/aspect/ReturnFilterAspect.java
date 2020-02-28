@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -17,6 +19,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /** @author Termite */
 @Aspect
@@ -64,7 +68,7 @@ public class ReturnFilterAspect {
     mapper.addMixIn(Object.class, DataMixIn.class);
 
     Object proceed = joinPoint.proceed();
-    return mapper.valueToTree(proceed);
+    return mapper.writeValueAsString(proceed);
   }
 
   @JsonFilter("filter")

@@ -47,7 +47,6 @@ public class MultipleBeanFilter extends SimpleBeanPropertyFilter {
   }
 
   private boolean include(String s) {
-    System.out.println(s);
     if (eInclude) {
       return names.stream().anyMatch(name -> name.indexOf(s) == 0);
     } else {

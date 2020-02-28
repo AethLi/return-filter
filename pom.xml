@@ -17,6 +17,10 @@
       <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>spring-boot-starter-aop</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
@@ -45,7 +49,7 @@
     <artifactId>spring-boot-starter-parent</artifactId>
     <groupId>org.springframework.boot</groupId>
     <relativePath/>
-    <version>2.2.2.RELEASE</version> <!-- lookup parent from repository -->
+    <version>1.4.5.RELEASE</version> <!-- lookup parent from repository -->
   </parent>
 
   <properties>

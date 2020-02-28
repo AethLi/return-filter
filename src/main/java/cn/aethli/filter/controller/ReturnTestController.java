@@ -15,16 +15,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /** @author Termite */
 @RestControllerAdvice
 @RequestMapping("return/test")
-public class ReturnTestController {
+public class ReturnTestController extends BaseController {
 
-  @GetMapping("include")
-  @ReturnInclude(names = {"msg", "data.id", "data.user.id"})
+  // 务必设置produce，防止返回值格式不正确
+  @GetMapping(value = "include", produces = "application/json;utf-8")
+  @ReturnInclude(names = {"msg", "data", "data.id", "data.user.department"})
   public Object includeTest() {
     return getResult();
   }
 
-  @GetMapping("exclude")
-  @ReturnExclude(names = {"msg", "data.id", "data.user.id"})
+  @GetMapping(value = "exclude", produces = "application/json;utf-8")
+  @ReturnExclude(names = {"msg", "data.id"})
   public Object excludeTest() {
     return getResult();
   }
@@ -38,6 +39,7 @@ public class ReturnTestController {
       User user = new User();
       user.setId(String.valueOf(x));
       user.setUserName("u" + x);
+      user.setDepartment(department);
       department.setUser(user);
       departments.add(department);
     }
