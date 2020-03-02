@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /** @author Termite */
 @RestControllerAdvice
 @RequestMapping("return/test")
-public class ReturnTestController extends BaseController {
+public class ReturnTestController /*extends BaseController*/ {
 
   // 务必设置produce，防止返回值格式不正确
   @GetMapping(value = "include", produces = "application/json;utf-8")
