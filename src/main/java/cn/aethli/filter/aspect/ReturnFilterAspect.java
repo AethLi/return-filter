@@ -64,7 +64,8 @@ public class ReturnFilterAspect {
     mapper.addMixIn(Object.class, DataMixIn.class);
 
     Object proceed = joinPoint.proceed();
-    return mapper.writeValueAsString(proceed);
+//    return mapper.valueToTree(proceed);
+        return mapper.writeValueAsString(proceed);
   }
 
   @JsonFilter("filter")
